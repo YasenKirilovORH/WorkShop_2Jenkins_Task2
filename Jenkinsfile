@@ -29,27 +29,33 @@ pipeline{
 			}
 		}
 		
-		stage('Run tests for TestProject1'){
-			steps{
-				bat 'dotnet test TestProject1/TestProject1.csproj --logger "trx;LogFileName-TestResults.trx"'
+		stage('Run tests for TestProject1') {
+			steps {
+				// Add the test SDK and JUnit logger
+				bat 'dotnet add TestProject1/TestProject1.csproj package Microsoft.NET.Test.Sdk --version 17.9.0'
+				bat 'dotnet add TestProject1/TestProject1.csproj package JunitXml.TestLogger'
+
+				// Run tests with the correct logger URI
+				bat 'dotnet test TestProject1/TestProject1.csproj --logger "junit;LogFilePath=test-results.xml"'
 			}
 		}
 		
-		stage('Run tests for TestProject2'){
-			steps{
-				bat 'dotnet test TestProject2/TestProject2.csproj --logger "trx;LogFileName-TestResults.trx"'
+		stage('Run tests for TestProject2') {
+			steps {
+				// Add the test SDK and JUnit logger
+				bat 'dotnet add TestProject2/TestProject2.csproj package Microsoft.NET.Test.Sdk --version 17.9.0'
+				bat 'dotnet add TestProject2/TestProject2.csproj package JunitXml.TestLogger'
+
+				// Run tests with the correct logger URI
+				bat 'dotnet test TestProject2/TestProject2.csproj --logger "junit;LogFilePath=test-results.xml"'
 			}
 		}
-	}
-	
-	post{
-		always{
-			archiveArtifacts artifacts: '**/TestResults/*.trx',
-			allowEmptyArchive: true
-			step([
-				$class: 'MSTestPublisher',
-				testResultFile: '**/TestResults/*.trx'
-			])
-		}
+		
+		stage('Post Actions') {
+            steps {
+                archiveArtifacts artifacts: '**/test-results.xml', allowEmptyArchive: true
+                junit '**/test-results.xml'
+            }
+        }
 	}
 }
