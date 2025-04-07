@@ -40,12 +40,16 @@ pipeline{
 				bat 'dotnet test TestProject2/TestProject2.csproj --logger "trx;LogFileName-TestResults.trx"'
 			}
 		}
-		
-		stage('Post Actions') {
-            steps {
-                archiveArtifacts artifacts: '**/test-results.xml', allowEmptyArchive: true
-                junit '**/test-results.xml'
-            }
-        }
+	}
+	
+	post{
+		always{
+			archiveArtifacts artifacts:
+			allowEmptyArchive: true
+			step([
+				$class: 'MSTestPublisher',
+				testResultFile: '**/TestResults/*.trx'
+			])
+		}
 	}
 }
