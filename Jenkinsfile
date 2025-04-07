@@ -4,12 +4,12 @@ pipeline{
 	stages{
 		stage("Checkout the code"){
 			steps{
-				git branch: main, url 'https://github.com/YasenKirilovORH/WorkShop_2Jenkins_Task2'
+				git branch: 'main', url: 'https://github.com/YasenKirilovORH/WorkShop_2Jenkins_Task2'
 			}
 		}
 		
 		stage("Set up dot net 6"){
-			steps {
+			steps{
                 bat '''
                 powershell -Command "Invoke-WebRequest -Uri 'https://builds.dotnet.microsoft.com/dotnet/Sdk/6.0.136/dotnet-sdk-6.0.136-win-x64.exe' -OutFile 'dotnet-sdk-6.0.136-win-x64.exe'"
                 dotnet-sdk-6.0.136-win-x64.exe /quiet /norestart
